@@ -1,0 +1,68 @@
+---
+title: "Data Challenge 4"
+author: "Yifan Lu"
+output:
+  html_document:
+    fig_height: 4.5
+    fig_width: 8
+  pdf_document:
+    fig_height: 3.5
+    fig_width: 3.5
+  word_document:
+    toc: no
+---
+https://github.com/cclyfblink/Data_Challenge_4_Yifan_Lu
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+```{r}
+## load in the required libraries 
+library(tidyverse)
+
+## disable scientific notation
+options(scipen = 999)
+```
+First write a function that does one play of the Monty Hall simulation. Have an argument switch which tells if the contestant uses the strategy of switching the door (switch = TRUE) or (switch = FALSE).
+
+First use sample() to select the door that the contestant picks and the door that the prize is under
+Next use an if else statement to show what door is revealed if (1) the contestant guessed the correct door or (2) if the contestant did not guess the correct door
+Use an if statement to switch guesses of the door if switch = TRUE return a logical (TRUE/FALSE) indicating if the game was won or not
+```{r}
+monty_hall <- function(switch){
+  # randomly generate the door with the car
+  car <- sample(1:3, 1)
+  # randomly generate the door with the first choice
+  choice <- sample(1:3, 1)
+  # decide which door to open
+  if (car == choice){
+      open <- sample(setdiff(1:3, choice), 1)
+  } else {
+      open <- setdiff(1:3, c(car, choice))
+  }
+  # decide whether to switch
+  if (switch){
+      choice <- setdiff(1:3, c(choice, open))
+  }
+  # return whether the game was won
+    return(choice == car)
+}
+```
+Next write a function that performs the simulation multiple times. Have an argument for the number of times to run the simulation (n) and the strategy (switch). Check out the replicate() function which may be useful.
+```{r}
+monty_hall_n <- function(n, switch){
+    replicate(n, monty_hall(switch))
+}
+```
+
+```{r}
+set.seed(1)
+monty_hall_n(1000, TRUE) |> mean()
+```
+```{r}
+set.seed(1)
+monty_hall_n(1000, FALSE) |> mean()
+```
+We can conclude that the probability of winning the car is about 2 times the probability if we do not switch the door. Therefore, we should always switch the door to win the car.
